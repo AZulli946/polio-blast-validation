@@ -1,0 +1,19 @@
+# Paths
+precomputed_virus_data: "../shiny_dashboard/dashboard_data/precomputed_virus.tsv.gz"
+gcs_service_account: "../shiny_dashboard/gcs_service_account.json"
+gcs_bucket: "wwscanseq"
+gcs_prefix: "viralmetagenomics/reports"
+
+# Poliovirus subspecies patterns to match (regex)
+subspecies_patterns:
+  - "^t__Human poliovirus"
+  - "^t__Poliovirus"
+
+# BLAST database
+blast_db_name: "poliovirus_complete"
+entrez_query: '"Poliovirus"[Organism] AND "complete genome"[Title]'
+entrez_email: "azulli@stanford.edu"
+
+# BLAST parameters
+max_target_seqs: 1
+evalue: 1e-5
