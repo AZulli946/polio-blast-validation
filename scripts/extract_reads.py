@@ -20,7 +20,7 @@ def _delivery_date_to_folder(delivery_date):
 def _find_bam_path(client, bucket_name, prefix, delivery_date, sample_id):
     """Find the BAM file path in GCS for a given sample and delivery."""
     folder = _delivery_date_to_folder(delivery_date)
-    bam_name = f"{sample_id}.third.filt.sorted.bam"
+    bam_name = f"{sample_id}.initial.filt.sorted.bam"
     bam_path = f"{prefix}/{folder}_esviritu_outputs/{bam_name}"
 
     bucket = client.bucket(bucket_name)

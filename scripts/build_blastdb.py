@@ -20,7 +20,7 @@ def run(config, data_dir):
 
     # Search NCBI for poliovirus complete genomes
     print(f"Searching NCBI: {entrez_query}")
-    handle = Entrez.esearch(db="nucleotide", term=entrez_query, retmax=500)
+    handle = Entrez.esearch(db="nucleotide", term=entrez_query, retmax=10000)
     record = Entrez.read(handle)
     handle.close()
 
