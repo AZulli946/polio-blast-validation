@@ -1,10 +1,22 @@
-"""Step 3: Download complete poliovirus genomes and build BLAST database."""
+"""Step 3: Download complete Enterovirus C genomes and build a BLAST database."""
 
 import os
 import shutil
 import subprocess
 import tempfile
+from collections import Counter
 from Bio import Entrez, SeqIO
+
+
+def _classify_reference(description):
+    desc = description.lower()
+    if "poliovirus" in desc:
+        return "poliovirus"
+    if "coxsackievirus" in desc:
+        return "coxsackievirus"
+    if "enterovirus c" in desc or "human enterovirus" in desc:
+        return "enterovirus_c_other"
+    return "other"
 
 
 def run(config, data_dir):
@@ -18,7 +30,7 @@ def run(config, data_dir):
     db_dir.mkdir(parents=True, exist_ok=True)
     fasta_path = db_dir / "genomes.fasta"
 
-    # Search NCBI for poliovirus complete genomes
+    # Search NCBI for complete Enterovirus C genomes, explicitly retaining poliovirus.
     print(f"Searching NCBI: {entrez_query}")
     handle = Entrez.esearch(db="nucleotide", term=entrez_query, retmax=10000)
     record = Entrez.read(handle)
@@ -40,9 +52,16 @@ def run(config, data_dir):
     fasta_path.write_text(fasta_data)
     print(f"  Written to {fasta_path}")
 
-    # Count sequences
-    n_seqs = sum(1 for _ in SeqIO.parse(str(fasta_path), "fasta"))
+    # Summarize downloaded references so the DB scope is obvious in logs.
+    counts = Counter()
+    n_seqs = 0
+    for record in SeqIO.parse(str(fasta_path), "fasta"):
+        n_seqs += 1
+        counts[_classify_reference(record.description)] += 1
     print(f"  Total sequences in FASTA: {n_seqs}")
+    for label in ("poliovirus", "coxsackievirus", "enterovirus_c_other", "other"):
+        if counts[label]:
+            print(f"    {label}: {counts[label]}")
 
     # Build BLAST database in a temp dir (BLAST+ can't handle paths with spaces)
     print("Building BLAST database...")
