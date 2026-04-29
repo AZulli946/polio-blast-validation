@@ -1,6 +1,6 @@
 # Poliovirus BLAST Validation Pipeline
 
-Extracts poliovirus-classified reads from EsViritu metagenomics BAM files, validates them via BLAST against a curated database of complete poliovirus genomes, and annotates results with genome region mapping.
+Extracts poliovirus-classified reads from EsViritu metagenomics BAM files, validates them via BLAST against a curated database of complete Enterovirus C genomes that explicitly includes all poliovirus genomes, and annotates results with genome region mapping.
 
 ## Quick Start
 
@@ -16,7 +16,7 @@ python run_pipeline.py             # runs all 5 steps
 |------|--------|-------------|
 | 1 | `identify_hits.py` | Find poliovirus hits in precomputed dashboard data |
 | 2 | `extract_reads.py` | Download BAMs from GCS, extract poliovirus-aligned reads |
-| 3 | `build_blastdb.py` | Download complete poliovirus genomes from NCBI, build BLAST DB |
+| 3 | `build_blastdb.py` | Download complete Enterovirus C genomes from NCBI, build BLAST DB |
 | 4 | `blast_validate.py` | Run blastn, join results with read metadata |
 | 5 | `annotate_regions.py` | Map BLAST coordinates to genome regions (VP1, 3D, etc.) |
 
@@ -41,4 +41,4 @@ Reads with no BLAST hit are included with empty BLAST columns.
 
 ## Configuration
 
-Edit `config.yaml` to change paths, subspecies patterns, BLAST parameters, or Entrez query.
+Edit `config.yaml` to change paths, subspecies patterns, BLAST parameters, or the Enterovirus C Entrez query used to build the reference database.

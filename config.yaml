@@ -10,8 +10,8 @@ subspecies_patterns:
   - "^t__Poliovirus"
 
 # BLAST database
-blast_db_name: "poliovirus_complete"
-entrez_query: '"Poliovirus"[Organism] AND "complete genome"[Title]'
+blast_db_name: "enterovirus_c_complete"
+entrez_query: '("Enterovirus C"[Organism] OR "Poliovirus"[Organism]) AND "complete genome"[Title]'
 entrez_email: "azulli@stanford.edu"
 
 # BLAST parameters
