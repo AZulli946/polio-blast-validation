@@ -1,4 +1,4 @@
-"""Step 2: Download BAMs from GCS and extract poliovirus-aligned reads."""
+"""Step 2: Download BAMs from GCS and extract target-virus-aligned reads."""
 
 import os
 import tempfile
@@ -38,12 +38,14 @@ def _download_blob(client, bucket_name, blob_path, local_path):
 
 
 def run(config, results_dir):
-    hits_path = results_dir / "poliovirus_hits.tsv"
+    target_name = config.get("target_name", "target virus")
+    target_slug = config.get("target_slug", "target")
+    hits_path = results_dir / f"{target_slug}_hits.tsv"
     hits = pd.read_csv(hits_path, sep="\t", dtype=str)
 
     if hits.empty:
-        print("No poliovirus hits to extract reads from.")
-        (results_dir / "poliovirus_reads.fasta").write_text("")
+        print(f"No {target_name} hits to extract reads from.")
+        (results_dir / f"{target_slug}_reads.fasta").write_text("")
         pd.DataFrame().to_csv(results_dir / "read_metadata.tsv", sep="\t", index=False)
         return
 
@@ -164,7 +166,7 @@ def run(config, results_dir):
             print(f"  Extracted {sample_read_count} reads from {len(target_refs)} reference(s)")
 
     # Write FASTA
-    fasta_path = results_dir / "poliovirus_reads.fasta"
+    fasta_path = results_dir / f"{target_slug}_reads.fasta"
     fasta_path.write_text("\n".join(fasta_records) + "\n" if fasta_records else "")
     print(f"\nTotal reads extracted: {total_reads}")
     print(f"FASTA written to {fasta_path}")

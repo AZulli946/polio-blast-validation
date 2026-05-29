@@ -7,6 +7,7 @@ Output is sized for a 16:9 PowerPoint slide (13.33 x 7.5 in).
 import math
 from pathlib import Path
 
+import yaml
 import matplotlib.pyplot as plt
 from matplotlib.patches import (
     Circle, Ellipse, FancyBboxPatch, Polygon, Rectangle,
@@ -103,7 +104,14 @@ def draw_card(ax, cx, cy, w, h, bg, step_num, icon_fn, icon_kwargs,
 
 
 def main():
-    out_path = Path(__file__).resolve().parent.parent / "results" / "pipeline_diagram.png"
+    project_dir = Path(__file__).resolve().parent.parent
+    with open(project_dir / "config.yaml") as f:
+        config = yaml.safe_load(f)
+    target_name = config.get("target_name", "target virus")
+    target_slug = config.get("target_slug", "target")
+    validation_line = config.get("diagram_validation_line", "and genome region")
+
+    out_path = project_dir / "results" / "pipeline_diagram.png"
     out_path.parent.mkdir(exist_ok=True)
 
     fig, ax = plt.subplots(figsize=(SLIDE_W, SLIDE_H), dpi=1200)
@@ -114,7 +122,7 @@ def main():
 
     # ---- Subtitle ----
     ax.text(SLIDE_W / 2, 6.95,
-            "Curated reference genomes  →  BLAST  →  confirmed poliovirus reads",
+            f"Curated reference genomes  →  BLAST  →  confirmed {target_name} reads",
             ha="center", va="center", fontsize=15, color="#5C6780", style="italic")
 
     # ---- Cards ----
@@ -139,7 +147,7 @@ def main():
         title="Build BLAST database",
         title_color="#1F3B6E",
         body_lines=[
-            "Fetch complete poliovirus",
+            f"Fetch complete {target_name}",
             "genomes from NCBI Entrez",
             "makeblastdb  →  nucleotide DB",
         ],
@@ -154,7 +162,7 @@ def main():
         title="Run BLAST",
         title_color="#563D7C",
         body_lines=[
-            "Query: polio-aligned reads",
+            f"Query: {target_slug}-aligned reads",
             "blastn against curated DB",
             "keep top hit per read",
         ],
@@ -170,7 +178,7 @@ def main():
         title_color="#1B5E20",
         body_lines=[
             "Filter by % identity",
-            "and genome region",
+            validation_line,
             "",
         ],
     )

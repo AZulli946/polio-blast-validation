@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Poliovirus BLAST Validation Pipeline — main orchestrator.
+"""BLAST validation pipeline — main orchestrator (shared core).
+
+This file is identical across the newcastle and polio repos. All target-specific
+behavior is driven by config.yaml; the target-specific analysis (step 5) lives in
+a module named by ``annotate_module`` in the config.
 
 Usage:
     python run_pipeline.py [--config config.yaml] [--step STEP]
@@ -8,7 +12,7 @@ Steps: identify, extract, blastdb, blast, annotate, all (default)
 """
 
 import argparse
-import sys
+import importlib
 import time
 from pathlib import Path
 
@@ -30,7 +34,7 @@ def load_config(config_path):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Poliovirus BLAST Validation Pipeline")
+    parser = argparse.ArgumentParser(description="BLAST validation pipeline")
     parser.add_argument(
         "--config", default="config.yaml",
         help="Path to config.yaml (default: config.yaml in script directory)",
@@ -56,11 +60,12 @@ def main():
 
     step = args.step
     t0 = time.time()
+    target_name = config.get("target_name", "target virus")
 
-    # Step 1: Identify poliovirus hits
+    # Step 1: Identify target-virus hits
     if step in ("identify", "all"):
         print("=" * 60)
-        print("STEP 1: Identify poliovirus hits")
+        print(f"STEP 1: Identify {target_name} hits")
         print("=" * 60)
         from scripts.identify_hits import run as identify
         identify(config, results_dir)
@@ -93,14 +98,19 @@ def main():
         blast(config, data_dir, results_dir)
         print()
 
-    # Step 5: Annotate genome regions
+    # Step 5: Target-specific annotation (module named by config)
     if step in ("annotate", "all"):
-        print("=" * 60)
-        print("STEP 5: Annotate genome regions")
-        print("=" * 60)
-        from scripts.annotate_regions import run as annotate
-        annotate(config, project_dir, results_dir)
-        print()
+        annotate_module = config.get("annotate_module")
+        annotate_label = config.get("annotate_step_label", "Annotate results")
+        if not annotate_module:
+            print("No 'annotate_module' configured; skipping step 5.")
+        else:
+            print("=" * 60)
+            print(f"STEP 5: {annotate_label}")
+            print("=" * 60)
+            module = importlib.import_module(f"scripts.{annotate_module}")
+            module.run(config, project_dir, data_dir, results_dir)
+            print()
 
     elapsed = time.time() - t0
     print(f"Pipeline complete in {elapsed:.1f}s")

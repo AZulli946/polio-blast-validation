@@ -9,13 +9,15 @@ import pandas as pd
 
 BLAST_COLUMNS = [
     "qseqid", "sseqid", "stitle", "pident", "length",
-    "qlen", "sstart", "send", "slen", "evalue", "bitscore",
+    "qlen", "qstart", "qend", "sstart", "send", "slen",
+    "evalue", "bitscore", "qseq", "sseq",
 ]
 
 
 def run(config, data_dir, results_dir):
     db_name = config["blast_db_name"]
-    query_path = results_dir / "poliovirus_reads.fasta"
+    target_slug = config.get("target_slug", "target")
+    query_path = results_dir / f"{target_slug}_reads.fasta"
     blast_out = results_dir / "blast_results.tsv"
     meta_path = results_dir / "read_metadata.tsv"
 
