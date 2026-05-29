@@ -4,15 +4,43 @@ gcs_service_account: "../shiny_dashboard/gcs_service_account.json"
 gcs_bucket: "wwscanseq"
 gcs_prefix: "viralmetagenomics/reports"
 
-# Poliovirus subspecies patterns to match (regex)
+# Target
+target_name: "poliovirus"
+target_slug: "poliovirus"
+
+# Dashboard subspecies patterns to match (regex)
 subspecies_patterns:
   - "^t__Human poliovirus"
   - "^t__Poliovirus"
+
+# Restrict to these delivery dates (YYYY-MM-DD). Empty/omitted = all deliveries.
+delivery_filter: []
 
 # BLAST database
 blast_db_name: "enterovirus_c_complete"
 entrez_query: '("Enterovirus C"[Organism] OR "Poliovirus"[Organism]) AND "complete genome"[Title]'
 entrez_email: "azulli@stanford.edu"
+entrez_batch_size: 200
+
+# Reference-class labels for the build-DB scope summary (substring match on description)
+reference_classes:
+  - label: "poliovirus"
+    patterns: ["poliovirus"]
+  - label: "coxsackievirus"
+    patterns: ["coxsackievirus"]
+  - label: "enterovirus_c_other"
+    patterns: ["enterovirus c", "human enterovirus"]
+
+# Optional reference-annotation hook (module in scripts/) run during build_blastdb.
+# Poliovirus uses genome-region mapping (step 5), not a per-reference annotation file.
+# reference_annotator:
+
+# Step 5: target-specific analysis module (in scripts/)
+annotate_module: "annotate_regions"
+annotate_step_label: "Annotate genome regions"
+
+# Pipeline-diagram text (step-3 validation card)
+diagram_validation_line: "and genome region"
 
 # BLAST parameters
 max_target_seqs: 1

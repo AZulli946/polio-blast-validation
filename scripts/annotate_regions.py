@@ -62,7 +62,7 @@ def _map_to_regions(sstart, send, region_list):
     return ", ".join(overlapping) if overlapping else "intergenic/unknown"
 
 
-def run(config, project_dir, results_dir):
+def run(config, project_dir, data_dir, results_dir):
     regions_path = project_dir / "genome_regions.tsv"
     merged_path = results_dir / "blast_merged.tsv"
 
